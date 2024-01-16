@@ -1,4 +1,3 @@
 **/.DS_Store
-**/*.JSON
 .pytest_cache
 __pycache__
