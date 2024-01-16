@@ -13,4 +13,4 @@ class BookingManager:
 
     # return nicely formatted string version of peep object
     def __repr__(self):
-        return f"Booking({self.guest}, {self.guest}, {self.date}, {self.accepted})"
+        return f"Booking({self.id}, {self.space}, {self.guest}, {self.date}, {self.pending}, {self.accepted})"

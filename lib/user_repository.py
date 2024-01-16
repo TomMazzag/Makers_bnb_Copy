@@ -1,5 +1,6 @@
 from lib.user import User
 import bcrypt
+from psycopg.errors import UniqueViolation
 
 class UserRepository:
     def __init__(self, connection):
@@ -15,10 +16,13 @@ class UserRepository:
         return users
 
     def create(self, user):
-        self.connection.execute(
-            "INSERT INTO users (username, email, hashed_password) VALUES (%s, %s, %s)",
-            [user.username, user.email, user.hashed_password],
-        )
+        try:
+            self.connection.execute(
+                "INSERT INTO users (username, email, hashed_password) VALUES (%s, %s, %s)",
+                [user.username, user.email, user.hashed_password],
+            )
+        except:
+            return True
 
     def find_user_id(self, user):
         rows = self.connection.execute(

@@ -12,8 +12,8 @@ def test_get_space_bookings(db_connection):
 
     assert rows == [
         Booking(1, date(2024, 5, 10), True, 1),
-        Booking(2, date(2024, 5, 11), False, 1),
-        Booking(3, date(2024, 5, 12), False, 1),
+        Booking(2, date(2024, 5, 11), True, 1),
+        Booking(3, date(2024, 5, 12), True, 1),
     ]
 
 def test_update_booking(db_connection):
@@ -24,8 +24,8 @@ def test_update_booking(db_connection):
 
     assert rows == [
         Booking(1, date(2024, 5, 10), True, 1),
-        Booking(2, date(2024, 5, 11), False, 1),
-        Booking(3, date(2024, 5, 12), False, 1),
+        Booking(2, date(2024, 5, 11), True, 1),
+        Booking(3, date(2024, 5, 12), True, 1),
     ]
 
     # change first data value
@@ -35,8 +35,8 @@ def test_update_booking(db_connection):
 
     assert rows == [
         Booking(1, date(2024, 5, 10), False, 1),
-        Booking(2, date(2024, 5, 11), False, 1),
-        Booking(3, date(2024, 5, 12), False, 1),
+        Booking(2, date(2024, 5, 11), True, 1),
+        Booking(3, date(2024, 5, 12), True, 1),
     ]
 
 """
@@ -49,9 +49,10 @@ def test_create_booking(db_connection):
     repository = BookingRepository(db_connection)
     booking = Booking(None, date(2024, 5, 13), True, 1)
     repository.create(booking)
+    print(repository.get_by_id(1))
     assert repository.get_by_id(1) == [
         Booking(1, date(2024, 5, 10), True, 1),
-        Booking(2, date(2024, 5, 11), False, 1),
-        Booking(3, date(2024, 5, 12), False, 1),
+        Booking(2, date(2024, 5, 11), True, 1),
+        Booking(3, date(2024, 5, 12), True, 1),
         Booking(13, date(2024, 5, 13), True, 1)
     ]

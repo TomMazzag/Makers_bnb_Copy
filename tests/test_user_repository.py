@@ -30,6 +30,22 @@ def test_create_user (db_connection):
         User(6, 'user6', 'user6@user.com', "Password"),
     ]
 
+def test_create_duplicate_username (db_connection):
+    db_connection.seed('seeds/makers_bnb.sql')
+    repository = UserRepository(db_connection)
+
+    user = User(None, 'user5', 'user6@user.com', 'Password')
+    error = repository.create(user)
+    assert error == True
+
+def test_create_duplicate_email (db_connection):
+    db_connection.seed('seeds/makers_bnb.sql')
+    repository = UserRepository(db_connection)
+
+    user = User(None, 'user6', 'user5@user.com', 'Password')
+    error = repository.create(user)
+    assert error == True
+
 def test_find_user_invalid(db_connection):
     db_connection.seed('seeds/makers_bnb.sql')
     repository = UserRepository(db_connection)
