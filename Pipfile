@@ -11,6 +11,9 @@ pytest-playwright = "*"
 pytest-xprocess = "*"
 py = "*"
 bcrypt = "*"
+playwright = "*"
+psycopg-binary = "*"
+exceptiongroup = "*"
 
 [dev-packages]
 autopep8 = "*"
