@@ -92,14 +92,14 @@ class BookingRequestRepository:
             )
         return bookings
     
-    def get_bookings_by_user(self, user_id):
+    def get_bookings_for_host(self, host_id):
         user_bookings = self._connection.execute("SELECT booking_requests.id, spaces.name, users.username, bookings.date, booking_requests.pending, booking_requests.accepted"
                         " FROM booking_requests"
                         " JOIN users on booking_requests.guest_id = users.id"
                         " JOIN bookings on booking_requests.booking_id = bookings.id"
                         " JOIN spaces on bookings.space_id = spaces.id"
                         " WHERE spaces.user_id = %s"
-                        " ORDER BY pending DESC, date", [user_id])
+                        " ORDER BY pending DESC, date", [host_id])
         bookings_to_return = []
         for booking in user_bookings:
             bookings_to_return.append(
@@ -113,3 +113,29 @@ class BookingRequestRepository:
                 )
             )
         return bookings_to_return
+    
+    def get_bookings_for_guest(self, guest_id):
+        guest_bookings = user_bookings = self._connection.execute("SELECT booking_requests.id, spaces.name, bookings.date, booking_requests.pending, booking_requests.accepted"
+                        " FROM booking_requests"
+                        " JOIN users on booking_requests.guest_id = users.id"
+                        " JOIN bookings on booking_requests.booking_id = bookings.id"
+                        " JOIN spaces on bookings.space_id = spaces.id"
+                        " WHERE booking_requests.guest_id = %s"
+                        " ORDER BY pending DESC, date", [guest_id])
+        bookings_to_return = []
+        for booking in user_bookings:
+            bookings_to_return.append(
+                BookingManager(
+                    booking["id"],
+                    booking["name"],
+                    None,
+                    booking["date"],
+                    booking["pending"],
+                    booking["accepted"]
+                )
+            )
+        return bookings_to_return
+    
+    def cancel_guest_request(self, booking_id):
+        self._connection.execute("DELETE FROM booking_requests *"
+                                 " WHERE id = %s", [booking_id])

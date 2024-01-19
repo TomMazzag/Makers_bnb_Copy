@@ -70,12 +70,21 @@
         <a href="/spaces"><img src="{{ url_for('static', filename='makersbnb_logo.svg') }}" width="200"
             height="100" /></a>
       </div>
+      {% if errors == "Too many incorrect attempts" %}
+        <label for="user">Username / Email</label>
+        <input type="text" name="user" id="user" class="form-control" required disabled="disabled" />
+        <label for="password">Password</label>
+        <input type="password" name="password" id="password" class="form-control" required disabled="disabled" />
+        <br />
+        <input type="submit" value="Sign In" class="btn btn-primary" disabled="disabled" />
+      {% else %}
       <label for="user">Username / Email</label>
       <input type="text" name="user" id="user" class="form-control" required />
       <label for="password">Password</label>
       <input type="password" name="password" id="password" class="form-control" required />
       <br />
       <input type="submit" value="Sign In" class="btn btn-primary" />
+      {% endif %}
     </form>
     <a href="/signup">Not a user? Sign up here</a>
     {% if errors %}

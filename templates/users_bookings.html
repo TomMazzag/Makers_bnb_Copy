@@ -71,8 +71,12 @@
                 <li>
                     <a href="/spaces" class="nav-link px-2">Spaces</a>
                 </li>
-                <li><a href="/my_bookings" class="nav-link px-2">My Bookings</a></li>
-                <li><a href="/manage_bookings" class="nav-link px-2 link-secondary">My Spaces Requests</a></li>
+                {% if not logged_in %}
+                <li><a href="/signup" class="nav-link px-2">Requests</a></li>
+                {% else %}
+                <li><a href="/my_bookings" class="nav-link px-2 link-secondary">My Bookings</a></li>
+                <li><a href="/manage_bookings" class="nav-link px-2">My Spaces Requests</a></li>
+                {% endif %}
             </ul>
             {% if not logged_in %}
             <div class="col-md-3 text-end">
@@ -101,7 +105,6 @@
             <thead>
                 <tr>
                     <th>Space Name</th>
-                    <th>Guest Username</th>
                     <th>Date</th>
                     <th>Status</th>
                     <th>Action</th>
@@ -112,30 +115,26 @@
                 <tr>
                     
                     {% if booking.pending %}
-                    <td><b>{{booking.space}}</b></td>
-                    <td><b>{{booking.guest}}</b></td>
-                    <td><b>{{booking.date}}</b></td>
-                    <td><b>{{ 'pending' if booking.pending == True else 'accepted' if booking.accepted == True else 'rejected' }}</b></td>
+                    <td>{{booking.space}}</td>
+                    <td>{{booking.date}}</td>
+                    <td>{{ 'pending' if booking.pending == True else 'accepted' if booking.accepted == True else 'rejected' }}</td>
                     <td class="action-buttons">
                         <div>
-                            <form method="post" action="/manage_bookings/accept/{{booking.id}}">
+                            <form method="post" action="/my_bookings/cancel/{{booking.id}}">
                                 <input type="hidden" name="booking.id" value="{{ booking.id }}">
-                                <button type="submit" class="accept-button" >Accept</button>
-                            </form>
-                        </div>
-                        <div>
-                            <form method="post" action="/manage_bookings/reject/{{booking.id}}">
-                                <input type="hidden" name="booking.id" value="{{ booking.id }}">
-                                <button type="submit" class="deny-button" >Reject</button>
+                                <button type="submit" class="deny-button" >Cancel Request</button>
                             </form>
                         </div>
                     </td>
                     {% else %}
                     <td>{{booking.space}}</td>
-                    <td>{{booking.guest}}</td>
                     <td>{{booking.date}}</td>
-                    <td>{{ 'pending' if booking.pending == True else 'accepted' if booking.accepted == True else 'rejected' }}</td>
-                    <td>Action Taken</td>
+                    {% if booking.accepted %}
+                    <td>accepted</td>
+                    {% else %}
+                    <td style="color: red;">rejected</td>
+                    {% endif %}
+                    <td>None</td>
                     {% endif %}
                 </tr>
                 {% endfor %}

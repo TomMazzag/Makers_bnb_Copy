@@ -147,22 +147,37 @@ def add_user_to_db():
 
 @app.route("/login", methods=["GET"])
 def render_login_page():
+
+    if 'max_login_attempts' not in session:
+        session['max_login_attempts'] = 4
+
+    if session['max_login_attempts'] == 0:
+        return render_template("login.html", errors="Too many incorrect attempts")
+
     return render_template("login.html")
 
 
 @app.route("/login", methods=["POST"])
 def login_user():
+
     connection = get_flask_database_connection(app)
     user_repository = UserRepository(connection)
 
+    if 'max_login_attempts' not in session:
+        session['max_login_attempts'] = 4
+
+    if session['max_login_attempts'] == 0:
+        return render_template("login.html", errors="Too many incorrect attempts")
+    
     username = request.form["user"]
     password = request.form["password"]
 
     # Check if user is in db and password matches
     user_id = user_repository.verify_user_login(username, password)
 
-    # If the user can't be found:
+    # If the user can't be found or password is incorrect:
     if not user_id:
+        session['max_login_attempts'] -= 1
         return render_template("login.html", errors="Incorrect login details")
     
     session['user_id'] = user_id
@@ -182,7 +197,7 @@ def get_booking_requests_for_user():
     request_repo = BookingRequestRepository(connection)
 
     user_details = get_user_details(connection)
-    bookings = request_repo.get_bookings_by_user(user_details.id)
+    bookings = request_repo.get_bookings_for_host(user_details.id)
     logged_in = session.get('logged_in', False)
 
     return render_template("booking_requests.html", logged_in=logged_in, bookings=bookings, user=user_details)
@@ -208,6 +223,24 @@ def reject_request(booking_requests_id):
     request_repo.reject_booking_request(booking_requests_id)
 
     return redirect("/manage_bookings")
+
+@app.route("/my_bookings", methods=["GET"])
+def get_my_bookings():
+    connection = get_flask_database_connection(app)
+    request_repo = BookingRequestRepository(connection)
+
+    user_details = get_user_details(connection)
+    bookings = request_repo.get_bookings_for_guest(user_details.id)
+    logged_in = session.get('logged_in', False)
+
+    return render_template("users_bookings.html", logged_in=logged_in, bookings=bookings, user=user_details)
+
+@app.route("/my_bookings/cancel/<booking_requests_id>", methods=["POST"])
+def cancel_guest_request(booking_requests_id):
+    connection = get_flask_database_connection(app)
+    request_repo = BookingRequestRepository(connection)
+    request_repo.cancel_guest_request(booking_requests_id)
+    return redirect('/my_bookings')
 
 
 
